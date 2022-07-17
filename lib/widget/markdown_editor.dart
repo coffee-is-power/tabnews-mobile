@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:tabnews/markdown.dart';
 
 class MarkdownEditor extends StatefulWidget {
-  const MarkdownEditor({Key? key, required this.textController})
+  const MarkdownEditor({Key? key, required this.textController, this.onChanged})
       : super(key: key);
   final TextEditingController textController;
+  final ValueChanged<String>? onChanged;
   @override
   State<MarkdownEditor> createState() => MarkdownEditorState();
 }
@@ -57,6 +58,7 @@ class MarkdownEditorState extends State<MarkdownEditor> {
                     controller: widget.textController,
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
+                    onChanged: widget.onChanged,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       hintText: "Escreva um comentário...",
