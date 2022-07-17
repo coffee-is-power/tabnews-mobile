@@ -1,22 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tabnews/api/login.dart';
+import 'package:tabnews/global_states/global_user.dart';
 import 'package:tabnews/markdown.dart';
+import 'package:tabnews/widget/markdown_editor.dart';
 import 'package:tabnews/widget_factories/appbar.dart';
 import 'package:tabnews/data_structures/post.dart';
 import '../../api/fetch_api.dart';
 import '../comments.dart';
 
-class PostScreen extends StatelessWidget {
+class PostScreen extends StatefulWidget {
   final String username;
   final String slug;
   final String title;
-  const PostScreen(
+  PostScreen(
       {super.key,
       required this.username,
       required this.slug,
       required this.title});
 
   @override
+  State<PostScreen> createState() => _PostScreenState();
+}
+
+class _PostScreenState extends State<PostScreen> {
+  final _markdownEditorController = TextEditingController();
+
+  @override
   Widget build(BuildContext context) {
+    User? user = context.watch<GlobalUser>().globalUser;
     return Scaffold(
       appBar: appbar(context),
       body: SingleChildScrollView(
@@ -30,9 +42,9 @@ class PostScreen extends StatelessWidget {
                 left: 10,
               ),
               child: Hero(
-                tag: 'post$username$slug',
+                tag: 'post${widget.username}${widget.slug}',
                 child: Text(
-                  title,
+                  widget.title,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
@@ -51,7 +63,24 @@ class PostScreen extends StatelessWidget {
                             child: Markdown(post.body!),
                           ),
                         ),
-                        CommentsLoader(username: username, slug: slug)
+                        CommentsLoader(
+                            username: widget.username, slug: widget.slug),
+                        if (user != null)
+                          MarkdownEditor(
+                            textController: _markdownEditorController,
+                            onChanged: (value) {
+                              setState(() {});
+                            },
+                          ),
+                        if (user != null)
+                          ElevatedButton(
+                            onPressed: _markdownEditorController.text.isEmpty
+                                ? null
+                                : () {
+                                    throw "TODO: Submitting comments is not implemented yet";
+                                  },
+                            child: const Text('Responder'),
+                          ),
                       ],
                     ),
                   );
@@ -64,7 +93,7 @@ class PostScreen extends StatelessWidget {
 
                 return const Center(child: CircularProgressIndicator());
               },
-              future: fetchPost(username, slug),
+              future: fetchPost(widget.username, widget.slug),
             ),
           ],
         ),
