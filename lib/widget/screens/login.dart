@@ -1,7 +1,9 @@
 // Login Screen widget in flutter
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tabnews/api/login.dart';
+import 'package:tabnews/global_states/global_user.dart';
 import 'package:tabnews/widget_factories/appbar.dart';
 
 class Login extends StatefulWidget {
@@ -108,6 +110,7 @@ class LoginState extends State<Login> {
                                     );
                                   });
                                 });
+                                context.read<GlobalUser>().tryLoad();
                                 setState(() {
                                   _isLoggingIn = false;
                                 });

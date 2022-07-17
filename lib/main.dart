@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tabnews/api/login.dart';
 
+import 'global_states/global_user.dart';
 import 'widget/screens/home.dart';
 
 void main() {
@@ -14,9 +15,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return FutureProvider<User?>(
-      initialData: null,
-      create: (_) => fetchUser(),
+    return ChangeNotifierProvider<GlobalUser>(
+      create: (_) => GlobalUser(),
       child: MaterialApp(
         title: 'TabNews',
         theme: ThemeData(
