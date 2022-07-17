@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:tabnews/markdown.dart';
 
 class MarkdownEditor extends StatefulWidget {
-  const MarkdownEditor({Key? key}) : super(key: key);
+  const MarkdownEditor({Key? key, required this.textController})
+      : super(key: key);
+  final TextEditingController textController;
   @override
   State<MarkdownEditor> createState() => MarkdownEditorState();
 }
 
 class MarkdownEditorState extends State<MarkdownEditor> {
-  final textController = TextEditingController();
   int selectedTab = 0;
   @override
   Widget build(BuildContext context) {
@@ -47,16 +48,19 @@ class MarkdownEditorState extends State<MarkdownEditor> {
           (selectedTab == 0
               ? Padding(
                   padding: const EdgeInsets.only(
-                    right: 8.0,
-                    left: 8,
+                    right: 18.0,
+                    left: 18.0,
                     top: 0,
                     bottom: 18,
                   ),
                   child: TextField(
-                    controller: textController,
+                    controller: widget.textController,
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
-                    decoration: null,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      hintText: "Escreva um comentário...",
+                    ),
                   ),
                 )
               : Align(
@@ -64,7 +68,7 @@ class MarkdownEditorState extends State<MarkdownEditor> {
                   child: Padding(
                     padding: const EdgeInsets.all(10),
                     child: SingleChildScrollView(
-                      child: Markdown(textController.text),
+                      child: Markdown(widget.textController.text),
                     ),
                   ),
                 )),
