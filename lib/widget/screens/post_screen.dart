@@ -29,6 +29,7 @@ class _PostScreenState extends State<PostScreen> {
   @override
   Widget build(BuildContext context) {
     User? user = context.watch<GlobalUser>().globalUser;
+    List<Post> justPostedComments = [];
     return Scaffold(
       appBar: appbar(context),
       body: SingleChildScrollView(
@@ -63,8 +64,6 @@ class _PostScreenState extends State<PostScreen> {
                             child: Markdown(post.body!),
                           ),
                         ),
-                        CommentsLoader(
-                            username: widget.username, slug: widget.slug),
                         if (user != null)
                           MarkdownEditor(
                             textController: _markdownEditorController,
@@ -76,11 +75,21 @@ class _PostScreenState extends State<PostScreen> {
                           ElevatedButton(
                             onPressed: _markdownEditorController.text.isEmpty
                                 ? null
-                                : () {
-                                    throw "TODO: Submitting comments is not implemented yet";
+                                : () async {
+                                    final body = _markdownEditorController.text;
+                                    setState(() {
+                                      _markdownEditorController.text = "";
+                                    });
+                                    final newComment = await post.comment(body);
+                                    setState(() {
+                                      justPostedComments.add(newComment!);
+                                    });
                                   },
                             child: const Text('Responder'),
                           ),
+                        Comments(comments: justPostedComments),
+                        CommentsLoader(
+                            username: widget.username, slug: widget.slug),
                       ],
                     ),
                   );

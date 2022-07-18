@@ -1,3 +1,8 @@
+import 'dart:convert';
+
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import "package:http/http.dart" as http;
+
 class Post {
   final String id;
   final String owner_id;
@@ -53,7 +58,47 @@ class Post {
       published_at: json["published_at"],
       username: json["username"],
       tabcoins: json["tabcoins"],
-      children_deep_count: json["children_deep_count"],
+      children_deep_count: json["children_deep_count"] ?? 0,
     );
+  }
+  // make a toJson function
+  Map<String, dynamic> toJson() => {
+        "children": children?.map((e) => e.toJson()).toList(),
+        "body": body,
+        "id": id,
+        "owner_id": owner_id,
+        "slug": slug,
+        "title": title,
+        "status": status,
+        "created_at": created_at,
+        "updated_at": updated_at,
+        "published_at": published_at,
+        "username": username,
+        "tabcoins": tabcoins,
+        "children_deep_count": children_deep_count,
+      };
+  Future<Post?> comment(String body) async {
+    const secureStorage = FlutterSecureStorage();
+    final token = await secureStorage.read(key: "token");
+    if (token == null) {
+      return null;
+    }
+    final response = await http.post(
+      Uri.parse("https://www.tabnews.com.br/api/v1/contents"),
+      headers: {
+        "Accept": "application/json",
+        "Cookie": "session_id=$token",
+      },
+      body: {
+        "body": body,
+        "parent_id": id,
+        "status": "published",
+      },
+    );
+    if (response.statusCode == 201) {
+      return Post.fromJson(json.decode(response.body));
+    } else {
+      return null;
+    }
   }
 }
